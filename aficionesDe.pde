@@ -1,11 +1,15 @@
-/* @pjs transparent="true"; */ //<>//
+/* @pjs transparent="true"; */
 
 Ball[] balls = new Ball[6];
+int locationBallsX = 600;
 int[] locationBallsY = {30, 80, 130, 180, 230, 280};
 float[][] colorAllBalls = new float[6][3];
 float[] ballGreyColor = {135, 135, 135};
-int ballDiameter = 15;
+int ballDiameter = 16;
 int sketchWidth = 688, sketchHeight = 396;
+int indexLastDraggedBall;
+boolean leftMouseButtonPressed = false;
+boolean alreadyDraggingOne = false;
 
 //____________________________________________________________
 void setup() {
@@ -19,7 +23,7 @@ void setup() {
     }
   }
   // Initializing all the elements of the array
-  for (int i = 0; i < balls.length; i++) { //<>//
+  for (int i = 0; i < balls.length; i++) {
     balls[i] = new Ball(i, ballDiameter, colorAllBalls[i], ballGreyColor, 4);
     balls[i].display(false);
   }
@@ -32,7 +36,11 @@ void draw() {
     background(0,0,0,0);
     // Calling functions of all of the objects in the array.
     for (int i = 0; i < balls.length; i++) {
-      balls[i].update();
+      if (balls[i].isBeingDragged() == false){
+        balls[i].updatePosition();
+      }else{
+         balls[i].followMe(); //<>//
+      }
       balls[i].checkEdges();
       balls[i].display(true);
     }
@@ -40,7 +48,19 @@ void draw() {
 }
 
 //____________________________________________________________
+void mousePressed(){
+  leftMouseButtonPressed = true;
+}
+
+//____________________________________________________________
+void mouseReleased(){
+  leftMouseButtonPressed = false;
+  alreadyDraggingOne = false;
+} //<>//
+ //<>//
+//____________________________________________________________
 class Ball {
+  int index;
   PVector location;
   PVector velocity;
   PVector acceleration;
@@ -50,7 +70,8 @@ class Ball {
   int diameterBall;
 
   Ball(int i, int diameterBall, float[] colorBall, float[] ballGreyColor, int topSpeed) {
-    location = new PVector(600, locationBallsY[i]);
+    index = i;
+    location = new PVector(locationBallsX, locationBallsY[i]);
     velocity = new PVector(0, 0);
     this.topspeed = topSpeed;
     this.ballGreyColor = ballGreyColor;
@@ -60,7 +81,7 @@ class Ball {
     this.diameterBall = diameterBall;
   }
   
-  void update() {
+  void updatePosition() {
     // Algorithm for calculating acceleration:
     //PVector mouse = new PVector(mouseX, mouseY);
     PVector mouse = new PVector(344, 198);
@@ -73,6 +94,11 @@ class Ball {
     velocity.limit(topspeed);
     location.add(velocity);
   }
+  
+  void followMe() {
+    location.x = mouseX;
+    location.y = mouseY;
+  }
 
   void display(boolean showYourTrueColors) {
     noStroke();
@@ -80,6 +106,7 @@ class Ball {
     if (showYourTrueColors){
       fill(this.colorBall[0], this.colorBall[1], this.colorBall[2]);
     }else{
+      stroke(this.ballGreyColor[0], this.ballGreyColor[1],this.ballGreyColor[2]);    
       fill(this.ballGreyColor[0], this.ballGreyColor[1],this.ballGreyColor[2]);     
     }
     ellipseMode(CENTER);
@@ -107,6 +134,24 @@ class Ball {
     if (sqrt(sq(disX) + sq(disY)) < diameterBall/2){
       return true;
     } else {
+      return false;
+    }
+  }
+  
+  boolean isBeingDragged(){
+    if ((overBall() && leftMouseButtonPressed) || (alreadyDraggingOne && indexLastDraggedBall == index)){
+      if (alreadyDraggingOne == false){
+        alreadyDraggingOne = true;
+        indexLastDraggedBall = index;
+        return true;
+      }else{
+        if(indexLastDraggedBall == index){
+          return true;
+        }else{
+          return false;
+        } //<>//
+      }
+    }else{
       return false;
     }
   }
