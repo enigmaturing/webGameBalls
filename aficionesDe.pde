@@ -3,6 +3,8 @@
 Ball[] balls = new Ball[6];
 int[] locationBallsY = {30, 80, 130, 180, 230, 280};
 float[][] colorAllBalls = new float[6][3];
+float[] ballGreyColor = {135, 135, 135};
+int ballDiameter = 15;
 int sketchWidth = 688, sketchHeight = 396;
 
 //____________________________________________________________
@@ -18,7 +20,7 @@ void setup() {
   }
   // Initializing all the elements of the array
   for (int i = 0; i < balls.length; i++) { //<>//
-    balls[i] = new Ball(i, 20, colorAllBalls[i], 4);
+    balls[i] = new Ball(i, ballDiameter, colorAllBalls[i], ballGreyColor, 4);
     balls[i].display(false);
   }
 }
@@ -44,12 +46,14 @@ class Ball {
   PVector acceleration;
   float topspeed;
   float[] colorBall = new float[3];
+  float[] ballGreyColor = new float[3];
   int diameterBall;
 
-  Ball(int i, int diameterBall, float[] colorBall, int topSpeed) {
+  Ball(int i, int diameterBall, float[] colorBall, float[] ballGreyColor, int topSpeed) {
     location = new PVector(600, locationBallsY[i]);
     velocity = new PVector(0, 0);
     this.topspeed = topSpeed;
+    this.ballGreyColor = ballGreyColor;
     for (int index = 0; index < colorBall.length; index++) {
       this.colorBall[index] = colorBall[index];
     }
@@ -70,14 +74,13 @@ class Ball {
     location.add(velocity);
   }
 
-
   void display(boolean showYourTrueColors) {
     noStroke();
     smooth();
     if (showYourTrueColors){
-      fill(colorBall[0], colorBall[1], colorBall[2]);
+      fill(this.colorBall[0], this.colorBall[1], this.colorBall[2]);
     }else{
-      fill(150, 150, 150);     
+      fill(this.ballGreyColor[0], this.ballGreyColor[1],this.ballGreyColor[2]);     
     }
     ellipseMode(CENTER);
     ellipse(location.x, location.y, diameterBall, diameterBall);
