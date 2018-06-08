@@ -19,7 +19,7 @@ void setup() {
   // Initializing all the elements of the array
   for (int i = 0; i < balls.length; i++) { //<>//
     balls[i] = new Ball(i, 20, colorAllBalls[i], 4);
-    balls[i].display();
+    balls[i].display(false);
   }
 }
 
@@ -32,7 +32,7 @@ void draw() {
     for (int i = 0; i < balls.length; i++) {
       balls[i].update();
       balls[i].checkEdges();
-      balls[i].display();
+      balls[i].display(true);
     }
   }
 }
@@ -70,10 +70,11 @@ class Ball {
     location.add(velocity);
   }
 
-  void display() {
+
+  void display(boolean showYourTrueColors) {
     noStroke();
     smooth();
-    if (overBall()){
+    if (showYourTrueColors){
       fill(colorBall[0], colorBall[1], colorBall[2]);
     }else{
       fill(150, 150, 150);     
